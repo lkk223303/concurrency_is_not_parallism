@@ -62,6 +62,16 @@ func (p Pool) Less(i, j int) bool {
 	return p[i].pending < p[j].pending
 
 }
+func (p Pool) Len() int {
+	return len(p)
+}
+func (p Pool) Pop() (out interface{}) {
+	out = p[len(p)-1]
+	return
+}
+func (p Pool) Push(out interface{}) {
+	p = append(p, out.(*Worker))
+}
 
 // Send Request to worker
 func (b *Balancer) dispatch(req Request) {
