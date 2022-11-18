@@ -65,12 +65,22 @@ func (p Pool) Less(i, j int) bool {
 func (p Pool) Len() int {
 	return len(p)
 }
-func (p Pool) Pop() (out interface{}) {
-	out = p[len(p)-1]
-	return
+func (p Pool) Swap(i, j int) {
+	p[i], p[j] = p[j], p[i]
 }
-func (p Pool) Push(out interface{}) {
-	p = append(p, out.(*Worker))
+func (p *Pool) Pop() interface{} {
+	old := *p
+	tmp := old[len(*p)-1]
+	*p = old[0 : len(*p)-1]
+	return tmp
+}
+
+func (p *Pool) Push(out interface{}) {
+	// Push 和 Pop 要透過指標傳值，因為會更動到 slice 的長度而不只是內容
+	// 解釋：
+	// append 過後的切片可能已經不是本來的切片
+	// 所以要透過指標更改 h 的值
+	*p = append(*p, out.(*Worker))
 }
 
 // Send Request to worker
