@@ -56,9 +56,14 @@ type Worker struct {
 
 func (w *Worker) work(done chan *Worker) {
 	for {
-		req := <-w.requests //get Request from balancer
-		req.c <- req.fn()   // cal fn and send result
-		done <- w           //we've finish the request
+		select {
+		case req := <-w.requests: //get Request from balancer
+			req.c <- req.fn() // cal fn and send result
+			done <- w         //we've finish the request
+		default:
+			continue
+		}
+
 	}
 
 }
